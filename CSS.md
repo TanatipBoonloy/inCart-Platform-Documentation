@@ -144,19 +144,19 @@ style กลาง ซึ่งเป็นพื้นฐานของ incart
 * Tablet: minWidth: 768, maxWidth: 991
 * Computer: minWidth: 992, maxWidth: -
 
-```scss
-  // mobile
+```css
+  /* mobile */
   @media only screen and (max-width: 767px) {
-    // mobile styling here
+    /* mobile styling here */
   }
 
-  // tablet
+  /* tablet */
   @media only screen and (min-width: 768px) and (max-width: 991) {
-    // tablet styling here
+    /* tablet styling here */
   }
 
-  // computer
+  /* computer */
   @media only screen and (min-width: 992) {
-    // computer styling here
+    /* computer styling here */
   }
 ```
