@@ -6,13 +6,17 @@
 
 ## TOC
 * [Global style](#global-style)
-* [Component style](#component-style)
-  * [Semantic](#Semantic component)
-  * [Theming](#theming)
-* [META inline](#meta-inline)
+* [New Component style](#component-style)
+  * [Semantic](#1-semantic-component)
+  * [Custom](#2-custom-component)
 * [CMS style](#cms-style)
   * [inCart Component](#incart-component-style)
   * [Semantic Component](#semantic-component-style)
+  * [Pattern Use cases](#Pattern-ในการเขียน)
+    * [1. Varied spacing between row](#1-varied-spacing-between-row)
+    * [2. Component that use ContextProvider](#2-component-that-use-contextprovider)
+    * [3. Media Query](#3-media-query)
+* [META inline](#meta-inline)
   
 ## Global style
 การ override ระดับ global จะกระทบทั้งเว็บไซต์
@@ -25,6 +29,15 @@
 
 ## Component Style
 เป็น style กลางของ component หรือเรียกว่า default style (ร้าน inCart)
+​
+> !! ทุก component ต้องรับ prop className และใส่เข้า html tag !!
+```js
+const PriceSummary = ({ className }) => (
+  <div className={cx()}>
+    <ContextProvider>{children}</ContextProvider>
+  </div>
+)
+```
 
 จะเริ่มทำ เมื่อมีการสร้าง component ใหม่ โดย pattern ที่ใช้มี 2 กรณี คือ
 ##### 1. Semantic component
@@ -38,57 +51,8 @@ molecules/
       Card.style.js
 ```
 ในไฟล์ Card.style.js จะเอา css ของ semantic มาใส่
-2.  Custom Component เช่น ColorSwatch, PriceSummary, AddressCard จะสร้าง css ไว้ใน file ที่เป็น react เลย
-```js
-import React from 'react'
-import PropTypes from 'prop-types'
-import { cx } from 'emotion'
-import { css } from 'react-emotion'
-
-const colorSwatchStyle = ({ value, selected }) => css`
-    min-width: ${size};
-    background: ${value};
-    border-radius: 2px;
-    height: ${size};
-    display: flex;
-    align-items: center;
-    margin-left: 10px;
-    position: relative;
-    z-index : 1;
-    
-    :after {
-      ${selected && `
-      height: 46px;
-      width: 46px;
-      border: 1px solid #000000;
-      top: -4px;
-      left: -4px;
-      content: "";
-      border-radius: 2px;
-      position: absolute;
-      `
-      }
-    }
-`
-
-const ColorSwatch = (props) => {
-  const onClick = (e, data) => props.onChange(data)
-  return (
-    <div
-      className={cx(props.className, colorSwatchStyle(props), 'color-swatch')}
-      onClick={onClick}
-      key={props.value}
-      role="button"
-      aria-hidden
-    />
-  )
-}
-```
-
-
-
-### CSS
-Pattern สำหรับเขียน style สำหรับ component
+##### 2. Custom Component
+ยกตัวอย่างเช่น ColorSwatch, PriceSummary, AddressCard จะสร้าง css ไว้ใน file ที่เป็น react เลย
 
 ข้อกำหนด
 * การใช้ style ของแต่ละ component ต้องใช้ผ่าน { css } แล้วนำ style ไป { cx } ที่ className props
@@ -119,7 +83,7 @@ Pattern สำหรับเขียน style สำหรับ component
     }
   }
 ```
-### Theming
+###### Theming
 การใช้ Theming จะใช้ withTheme ในการ inject colors / size  
 ใช้ { css } โดยเรียกเป็น function ให้ส่ง theme จาก withTheme เข้ามา
 ```js
@@ -148,19 +112,20 @@ Pattern สำหรับเขียน style สำหรับ component
 ```
 
 
-## META inline
-เป็นการทำ styling ผ่าน JSON โดยใส่เป็นรูปแบบ css in js มีน้ำหนักสูงที่สุด
-> inline style ที่จะถูก apply เฉพาะ specific component (เมื่อแก้ style จาก CMS UI จะถูก apply ที่นี่)<br/>
-> [ตัวอย่างการใช้งาน](#style)
-
 ## CMS Style
-สร้าง styling ผ่านไฟล์ sass ของแต่ละ component ที่ CMS server
-> ใช้สำหรับใส่ style ที่แตกต่างกันในแต่ละร้าน
-ข้อกำหนด
-* สร้างไฟล์ตามชื่อ component ใน cms/themes/\<store\>
-* ชื่อไฟล์เป็น CamelCase ใช้นามสกุล sass ในรูป <component-name>.sass เช่น SpecialButton.sass
-* ในไฟล์ sass สามารถใส่ css/sass (คล้ายรูปแบบที่เขียนใน emotion/style-component ) ได้ทันที
-### inCart Component Style
+นำ default component มาปรับ style ให้เข้ากับร้านนั้นๆ โดยสร้างไฟล์ {ComponentName}.scss ที่
+```js
+__mocks__
+    cms
+      themes
+        {store}
+          {ComponentName}.scss
+```
+* store = folder ร้าน
+* componentName = ชื่อ component ซึ่งต้องตรงกับชื่อไฟล์ js ด้วย
+
+
+#### inCart Component Style
 สามารถ apply style ต่างๆ ได้โดยตรง
 ```scss
  // FormInput.sass
@@ -175,7 +140,7 @@ Pattern สำหรับเขียน style สำหรับ component
  }
 ```
 
-### Semantic Component Style
+#### Semantic Component Style
 ในการ apply style ต้องใส่ className ตามรูปแบบของ Semantic เพื่อให้การ override style มีน้ำหนักมากกว่า Style ของ Semantic
 ```scss
   // Button.sass
@@ -197,3 +162,124 @@ Pattern สำหรับเขียน style สำหรับ component
     }
   }
 ```
+
+#### Pattern ในการเขียน
+##### 1. Varied spacing between row
+ต้องการจัด padding-top, bottom ของหลายๆ Row โดยที่แต่ละ Row มี padding ไม่เท่ากัน
+
+Example: CartPage
+```text
+    CartPage
+        Grid
+            Row (padding-top: 30, bottom: 10)
+                Column
+                    Header
+            Row (padding-top: 10, bottom: 20)
+                Column
+                    Text
+            Row
+                Column
+                    ...
+```
+Case นี้ให้ใส่ className ลงไปในแต่ละ Row แล้ว override padding ผ่าน CartPage.scss
+```text
+    CartPage
+        Grid
+            Row className="cart-header"
+                Column
+                    Header
+            Row className="cart-amount-items"
+                Column
+                    Text
+            Row
+                Column
+                    ...
+```
+```scss
+/* CartPage.scss */
+
+  &.cart-page {
+    .ui.grid {
+      .row {
+        &.cart-header {
+          padding-top: 30px;
+          padding-bottom: 10px;
+        }
+        &.cart-amount-items {
+          padding-top: 10px;
+          padding-bottom: 20px;
+        }
+      }
+    }
+  }    
+```
+##### 2. Component that use ContextProvider
+กรณีที่ Component ดังกล่าวมีการเรียกใช้ ContextProvider ในการ render
+Example: PriceSummary
+```js
+const PriceSummary = (props) => {
+  const {
+    priceSummary,
+    children,
+  } = props
+  const price = new Price(priceSummary)
+  return (
+    <ContextProvider data={price.data}>
+      {children}
+    </ContextProvider>
+  )
+}
+```
+สำหรับ case นี้สิ่งที่ผิดคือ
+* ไม่รับ className จาก prop ทำให้ไม่สามารถเขียน .scss ได้
+* ไม่มี div ที่บ่งบอก className="price-summary"
+
+```js
+// Fixed By
+const PriceSummary = (props) => {
+  const {
+    className,
+    priceSummary,
+    children,
+  } = props
+  const price = new Price(priceSummary)
+  return (
+    <div className={cx('price-summary', className)}>
+      <ContextProvider data={price.data}>
+        {children}
+      </ContextProvider>
+    </div>
+  )
+}
+```
+ทำให้สามารถเขียน PriceSummary.scss เพื่อ override css ของ Row ที่เขียนเป็น children อยู่ใน json ได้
+
+##### 3. Media Query
+การเขียน media query ในไฟล์ .scss
+```scss
+    @media only screen and (max-width: 767px) {
+      // mobile only
+      color: antiquewhite;
+      ...other css
+    }
+    
+    // we use mobile-first design, so default style should work with mobile
+    
+    color: red; // for mobile by default
+    
+    @media only screen and (min-width: 768px) and (max-width: 991px) {
+      // tablet only
+      color: antiquewhite;
+    }
+    
+    @media only screen and (min-width: 992px) {
+      // computer +
+      color: black;
+    }
+```
+
+
+## META inline
+เป็นการทำ styling ผ่าน JSON โดยใส่เป็นรูปแบบ css in js มีน้ำหนักสูงที่สุด
+> inline style ที่จะถูก apply เฉพาะ specific component (เมื่อแก้ style จาก CMS UI จะถูก apply ที่นี่)<br/>
+> [ตัวอย่างการใช้งาน](#style)
