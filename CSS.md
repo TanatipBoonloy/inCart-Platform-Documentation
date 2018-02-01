@@ -3,6 +3,15 @@
 
 > หากต้องการเพิ่มน้ำหนักของ Style ที่แต่ละ level ทำได้โดยเพิ่ม hierarchy ของ classname ที่เกิดขึ้น
 
+## TOC
+* [META inline](#meta-inline)
+* [CMS style](#cms-style)
+  * [inCart Component](#incart-component-style)
+  * [Semantic Component](#semantic-component-style)
+* [Component style](#component-style)
+  * [CSS](#css)
+  * [Theming](#theming)
+* [Global style](#global-style)
 
 ## META inline
 เป็นการทำ styling ผ่าน JSON โดยใส่เป็นรูปแบบ css in js มีน้ำหนักสูงที่สุด

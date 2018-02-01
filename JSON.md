@@ -15,6 +15,18 @@ JSON Schema สำหรับ component แบ่งเป็น 3 ส่วน
   "primary": true
 }
 ```
+
+## TOC
+* [\_meta](#_meta)
+  * [hoc/hocs](#hochocs)
+  * [context](#context)
+  * [translate](#translate)
+  * [slots](#slots)
+  * [style](#style)
+  * [hiddenOn](#hiddenon)
+  * [useTheme](#usetheme)
+  * [cautions](#cautions)
+
 ## \_meta
 
 ### hoc/hocs

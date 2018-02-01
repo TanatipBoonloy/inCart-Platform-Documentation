@@ -1,5 +1,9 @@
 # JS
 
+## TOC
+* [Components](#components)
+* [HOCs](#hocs)
+
 ## Components
 > Component ทุก component ต้องรับ classname และมี static-classname เป็นของตัวเอง แล้ว apply ให้กับ component ในรูปแบบ
 > ```js
