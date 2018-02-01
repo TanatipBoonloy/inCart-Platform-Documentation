@@ -3,29 +3,34 @@
 
 > หากต้องการเพิ่มน้ำหนักของ Style ที่แต่ละ level ทำได้โดยเพิ่ม hierarchy ของ classname ที่เกิดขึ้น
 
-## TOC
-* [META inline](#meta-inline)
-* [CMS style](#cms-style)
-  * [inCart Component](#incart-component-style)
-  * [Semantic Component](#semantic-component-style)
-* [Component style](#component-style)
-  * [CSS](#css-1)
-  * [Theming](#theming)
-* [Global style](#global-style)
 
-## META inline
+## TOC
+* [Styling in Scope](#styling-in-scope)
+  * [META inline](#meta-inline)
+  * [CMS style](#cms-style)
+    * [inCart Component](#incart-component-style)
+    * [Semantic Component](#semantic-component-style)
+  * [Component style](#component-style)
+    * [CSS](#css-1)
+    * [Theming](#theming)
+  * [Global style](#global-style)
+* [Style Coding](#style-coding)
+  * [Media Query](#media-query)
+
+## Styling in Scope
+### META inline
 เป็นการทำ styling ผ่าน JSON โดยใส่เป็นรูปแบบ css in js มีน้ำหนักสูงที่สุด
 > inline style ที่จะถูก apply เฉพาะ specific component (เมื่อแก้ style จาก CMS UI จะถูก apply ที่นี่)<br/>
 > [ตัวอย่างการใช้งาน](#style)
 
-## CMS Style
+### CMS Style
 สร้าง styling ผ่านไฟล์ sass ของแต่ละ component ที่ CMS server
 > ใช้สำหรับใส่ style ที่แตกต่างกันในแต่ละร้าน
 ข้อกำหนด
 * สร้างไฟล์ตามชื่อ component ใน cms/themes/\<store\>
 * ชื่อไฟล์เป็น CamelCase ใช้นามสกุล sass ในรูป <component-name>.sass เช่น SpecialButton.sass
 * ในไฟล์ sass สามารถใส่ css/sass (คล้ายรูปแบบที่เขียนใน emotion/style-component ) ได้ทันที
-### inCart Component Style
+#### inCart Component Style
 สามารถ apply style ต่างๆ ได้โดยตรง
 ```scss
  // FormInput.sass
@@ -40,7 +45,7 @@
  }
 ```
 
-### Semantic Component Style
+#### Semantic Component Style
 ในการ apply style ต้องใส่ className ตามรูปแบบของ Semantic เพื่อให้การ override style มีน้ำหนักมากกว่า Style ของ Semantic
 ```scss
   // Button.sass
@@ -63,11 +68,11 @@
   }
 ```
 
-## Component Style
+### Component Style
 เป็นการสร้าง basic style สำหรับ component โดยจะเขียน style ลงใน js file ของ component นั้นๆ (รูปแบบ emotion-js/ styled-components)
 > ใช้สำหรับสร้าง style ของ inCart Platform
 
-### CSS
+#### CSS
 Pattern สำหรับเขียน style สำหรับ component
 
 ข้อกำหนด
@@ -99,7 +104,7 @@ Pattern สำหรับเขียน style สำหรับ component
     }
   }
 ```
-### Theming
+#### Theming
 การใช้ Theming จะใช้ withTheme ในการ inject colors / size  
 ใช้ { css } โดยเรียกเป็น function ให้ส่ง theme จาก withTheme เข้ามา
 ```js
@@ -127,7 +132,31 @@ Pattern สำหรับเขียน style สำหรับ component
   export default withTheme(DarkGreyButton)
 ```
 
-## Global Style
+### Global Style
 
 style กลาง ซึ่งเป็นพื้นฐานของ incart platform มีน้ำหนักต่ำที่สุด
 **ห้ามแก้ไข style ที่นี่**
+
+## Style Coding
+### Media Query
+รูปแบบการเขียน MediaQuery สำหรับ media size ต่างๆ
+* Mobile: minWidth: - , maxWidth: 767
+* Tablet: minWidth: 768, maxWidth: 991
+* Computer: minWidth: 992, maxWidth: -
+
+```scss
+  // mobile
+  @media only screen and (max-width: 767px) {
+    // mobile styling here
+  }
+
+  // tablet
+  @media only screen and (min-width: 768px) and (max-width: 991) {
+    // tablet styling here
+  }
+
+  // computer
+  @media only screen and (min-width: 992) {
+    // computer styling here
+  }
+```
