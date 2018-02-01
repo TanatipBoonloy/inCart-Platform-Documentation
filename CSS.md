@@ -21,7 +21,22 @@
 ### META inline
 เป็นการทำ styling ผ่าน JSON โดยใส่เป็นรูปแบบ css in js มีน้ำหนักสูงที่สุด
 > inline style ที่จะถูก apply เฉพาะ specific component (เมื่อแก้ style จาก CMS UI จะถูก apply ที่นี่)<br/>
-> [ตัวอย่างการใช้งาน](#style)
+```js
+"_meta": {
+  "style": {
+    "computer": {
+      "background": "red"
+    },
+    "tablet": {
+      "paddingLeft": "23px"
+    },
+    "mobile": {
+      "position": "absolute !important",
+      "bottom": 0
+    }
+  }
+}
+```
 
 ### CMS Style
 สร้าง styling ผ่านไฟล์ sass ของแต่ละ component ที่ CMS server
