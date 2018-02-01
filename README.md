@@ -22,6 +22,6 @@ Summarize all technique and pattern use in inCart Platform Project
     * [inCart Component](CSS.md#incart-component-style)
     * [Semantic Component](CSS.md#semantic-component-style)
   * [Component style](CSS.md#component-style)
-    * [CSS](CSS.md#css)
+    * [CSS](CSS.md#css-1)
     * [Theming](CSS.md#theming)
   * [Global style](CSS.md#global-style)

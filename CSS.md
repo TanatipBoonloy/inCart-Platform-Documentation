@@ -9,7 +9,7 @@
   * [inCart Component](#incart-component-style)
   * [Semantic Component](#semantic-component-style)
 * [Component style](#component-style)
-  * [CSS](#css)
+  * [CSS](#css-1)
   * [Theming](#theming)
 * [Global style](#global-style)
 
