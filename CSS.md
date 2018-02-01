@@ -163,8 +163,8 @@ __mocks__
   }
 ```
 
-#### Pattern ในการเขียน
-##### 1. Varied spacing between row
+### Pattern ในการเขียน
+#### 1. Varied spacing between row
 ต้องการจัด padding-top, bottom ของหลายๆ Row โดยที่แต่ละ Row มี padding ไม่เท่ากัน
 
 Example: CartPage
@@ -213,7 +213,7 @@ Case นี้ให้ใส่ className ลงไปในแต่ละ Row
     }
   }    
 ```
-##### 2. Component that use ContextProvider
+#### 2. Component that use ContextProvider
 กรณีที่ Component ดังกล่าวมีการเรียกใช้ ContextProvider ในการ render
 Example: PriceSummary
 ```js
@@ -254,7 +254,7 @@ const PriceSummary = (props) => {
 ```
 ทำให้สามารถเขียน PriceSummary.scss เพื่อ override css ของ Row ที่เขียนเป็น children อยู่ใน json ได้
 
-##### 3. Media Query
+#### 3. Media Query
 การเขียน media query ในไฟล์ .scss
 ```scss
     @media only screen and (max-width: 767px) {
