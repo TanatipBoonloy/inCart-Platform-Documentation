@@ -1,50 +1,130 @@
-# CSS
-การทำ Theming และ Style สามารถใส่ style ได้ใน level ต่างๆ ซึ่ง style ที่ apply กับ component จะถูก override ตามน้ำหนักของแต่ละ level เรียงลำดับตาม priority สูงสุด ไปยัง ต่ำสุด
+# CSS Table of Contents
+
+การทำ styling ใน incart-platform มีอยู่ด้วยกัน 4 ระดับ เรียงลำดับตาม priority ต่ำสุด ไปยัง สูงสุด
 
 > หากต้องการเพิ่มน้ำหนักของ Style ที่แต่ละ level ทำได้โดยเพิ่ม hierarchy ของ classname ที่เกิดขึ้น
 
-
 ## TOC
-* [Styling in Scope](#styling-in-scope)
-  * [META inline](#meta-inline)
-  * [CMS style](#cms-style)
-    * [inCart Component](#incart-component-style)
-    * [Semantic Component](#semantic-component-style)
-  * [Component style](#component-style)
-    * [CSS](#css-1)
-    * [Theming](#theming)
-  * [Global style](#global-style)
-* [Style Coding](#style-coding)
-  * [Media Query](#media-query)
+* [Global style](#global-style)
+* [New Component style](#component-style)
+  * [Semantic](#1-semantic-component)
+  * [Custom](#2-custom-component)
+* [CMS style](#cms-style)
+  * [inCart Component](#incart-component-style)
+  * [Semantic Component](#semantic-component-style)
+  * [Pattern Use cases](#Pattern-ในการเขียน)
+    * [1. Varied spacing between row](#1-varied-spacing-between-row)
+    * [2. Component that use ContextProvider](#2-component-that-use-contextprovider)
+    * [3. Media Query](#3-media-query)
+* [META inline](#meta-inline)
+  
+## Global style
+การ override ระดับ global จะกระทบทั้งเว็บไซต์
+ตัวอย่าง
+* การตั้งค่า font-family
+* การ reset default style ของ html (h1, h2, …, a)
 
-## Styling in Scope
-### META inline
-เป็นการทำ styling ผ่าน JSON โดยใส่เป็นรูปแบบ css in js มีน้ำหนักสูงที่สุด
-> inline style ที่จะถูก apply เฉพาะ specific component (เมื่อแก้ style จาก CMS UI จะถูก apply ที่นี่)<br/>
+สามารถดูโค้ดได้ที่
+> @store-front / helpers / globalStyles
+
+## Component Style
+เป็น style กลางของ component หรือเรียกว่า default style (ร้าน inCart)
+​
+> !! ทุก component ต้องรับ prop className และใส่เข้า html tag !!
 ```js
-"_meta": {
-  "style": {
-    "computer": {
-      "background": "red"
-    },
-    "tablet": {
-      "paddingLeft": "23px"
-    },
-    "mobile": {
-      "position": "absolute !important",
-      "bottom": 0
-    }
-  }
-}
+const PriceSummary = ({ className }) => (
+  <div className={cx()}>
+    <ContextProvider>{children}</ContextProvider>
+  </div>
+)
 ```
 
-### CMS Style
-สร้าง styling ผ่านไฟล์ sass ของแต่ละ component ที่ CMS server
-> ใช้สำหรับใส่ style ที่แตกต่างกันในแต่ละร้าน
+จะเริ่มทำ เมื่อมีการสร้าง component ใหม่ โดย pattern ที่ใช้มี 2 กรณี คือ
+##### 1. Semantic component
+เราจะสร้างไฟล์ {Component}.style.js ไว้ในโฟล์เดอร์เดียวกัน เช่น ต้องสร้าง Card
+ 
+```js
+molecules/
+    Card/
+      index.js
+      Card.js
+      Card.style.js
+```
+ในไฟล์ Card.style.js จะเอา css ของ semantic มาใส่
+##### 2. Custom Component
+ยกตัวอย่างเช่น ColorSwatch, PriceSummary, AddressCard จะสร้าง css ไว้ใน file ที่เป็น react เลย
+
 ข้อกำหนด
-* สร้างไฟล์ตามชื่อ component ใน cms/themes/\<store\>
-* ชื่อไฟล์เป็น CamelCase ใช้นามสกุล sass ในรูป <component-name>.sass เช่น SpecialButton.sass
-* ในไฟล์ sass สามารถใส่ css/sass (คล้ายรูปแบบที่เขียนใน emotion/style-component ) ได้ทันที
+* การใช้ style ของแต่ละ component ต้องใช้ผ่าน { css } แล้วนำ style ไป { cx } ที่ className props
+* component ต้องรับ props className
+* component ต้องมี static-classname เป็นของตัวเอง (string ที่บ่งบอกถึง component นั้นๆ)
+* props className ของ component ได้จากการ { cx } className ต่างๆ เข้าด้วยกันโดย<br/>**className ที่รับจาก props ต้องอยู่หลังสุดเสมอ**
+
+```js
+  import React, { Component } from 'react'
+  import { css } from 'react-emotion'
+  import { cx } from 'emotion'
+  import Button from '@atoms/Button'
+
+  const redButtonStyle = css`
+    background: red;
+    color: white;
+  `
+
+  class RedButton extend Component {
+    render() {
+      const {
+        className,
+        ...rest
+      } = this.props
+      return (
+        <Button className={cx('red-button', redButtonStyle, className)} {...rest} />
+      )
+    }
+  }
+```
+###### Theming
+การใช้ Theming จะใช้ withTheme ในการ inject colors / size  
+ใช้ { css } โดยเรียกเป็น function ให้ส่ง theme จาก withTheme เข้ามา
+```js
+  import withTheme from '@store-front/hocs/withTheme'
+  import { pickColor } from '@store-front/selectors/theme'
+
+  const darkGreyButtonStyle = (theme) => css`
+    background: ${pickColor(theme)('darkGrey')} // use pickColor to get color
+    color: ${get(theme, ['colors', 'lightGrey'])} // get color directly from theme
+  `
+  const DarkGreyButton = (props) => {
+    const { className, theme, ...rest } = props
+    return (
+      <Button
+        className={cx(
+        'grey-button',
+        darkGreyButtonStyle(theme),
+        className,
+        )}
+        {...rest}
+      />
+    )
+  }
+
+  export default withTheme(DarkGreyButton)
+```
+
+
+## CMS Style
+นำ default component มาปรับ style ให้เข้ากับร้านนั้นๆ โดยสร้างไฟล์ {ComponentName}.scss ที่
+```js
+__mocks__
+    cms
+      themes
+        {store}
+          {ComponentName}.scss
+```
+* store = folder ร้าน
+* componentName = ชื่อ component ซึ่งต้องตรงกับชื่อไฟล์ js ด้วย
+
+
 #### inCart Component Style
 สามารถ apply style ต่างๆ ได้โดยตรง
 ```scss
@@ -83,95 +163,123 @@
   }
 ```
 
-### Component Style
-เป็นการสร้าง basic style สำหรับ component โดยจะเขียน style ลงใน js file ของ component นั้นๆ (รูปแบบ emotion-js/ styled-components)
-> ใช้สำหรับสร้าง style ของ inCart Platform
+### Pattern ในการเขียน
+#### 1. Varied spacing between row
+ต้องการจัด padding-top, bottom ของหลายๆ Row โดยที่แต่ละ Row มี padding ไม่เท่ากัน
 
-#### CSS
-Pattern สำหรับเขียน style สำหรับ component
+Example: CartPage
+```text
+    CartPage
+        Grid
+            Row (padding-top: 30, bottom: 10)
+                Column
+                    Header
+            Row (padding-top: 10, bottom: 20)
+                Column
+                    Text
+            Row
+                Column
+                    ...
+```
+Case นี้ให้ใส่ className ลงไปในแต่ละ Row แล้ว override padding ผ่าน CartPage.scss
+```text
+    CartPage
+        Grid
+            Row className="cart-header"
+                Column
+                    Header
+            Row className="cart-amount-items"
+                Column
+                    Text
+            Row
+                Column
+                    ...
+```
+```scss
+/* CartPage.scss */
 
-ข้อกำหนด
-* การใช้ style ของแต่ละ component ต้องใช้ผ่าน { css } แล้วนำ style ไป { cx } ที่ className props
-* component ต้องรับ props className
-* component ต้องมี static-classname เป็นของตัวเอง (string ที่บ่งบอกถึง component นั้นๆ)
-* props className ของ component ได้จากการ { cx } className ต่างๆ เข้าด้วยกันโดย<br/>**className ที่รับจาก props ต้องอยู่หลังสุดเสมอ**
-
-```js
-  import React, { Component } from 'react'
-  import { css } from 'react-emotion'
-  import { cx } from 'emotion'
-  import Button from '@atoms/Button'
-
-  const redButtonStyle = css`
-    background: red;
-    color: white;
-  `
-
-  class RedButton extend Component {
-    render() {
-      const {
-        className,
-        ...rest
-      } = this.props
-      return (
-        <Button className={cx('red-button', redButtonStyle, className)} {...rest} />
-      )
+  &.cart-page {
+    .ui.grid {
+      .row {
+        &.cart-header {
+          padding-top: 30px;
+          padding-bottom: 10px;
+        }
+        &.cart-amount-items {
+          padding-top: 10px;
+          padding-bottom: 20px;
+        }
+      }
     }
-  }
+  }    
 ```
-#### Theming
-การใช้ Theming จะใช้ withTheme ในการ inject colors / size  
-ใช้ { css } โดยเรียกเป็น function ให้ส่ง theme จาก withTheme เข้ามา
+#### 2. Component that use ContextProvider
+กรณีที่ Component ดังกล่าวมีการเรียกใช้ ContextProvider ในการ render
+Example: PriceSummary
 ```js
-  import withTheme from '@store-front/hocs/withTheme'
-  import { pickColor } from '@store-front/selectors/theme'
+const PriceSummary = (props) => {
+  const {
+    priceSummary,
+    children,
+  } = props
+  const price = new Price(priceSummary)
+  return (
+    <ContextProvider data={price.data}>
+      {children}
+    </ContextProvider>
+  )
+}
+```
+สำหรับ case นี้สิ่งที่ผิดคือ
+* ไม่รับ className จาก prop ทำให้ไม่สามารถเขียน .scss ได้
+* ไม่มี div ที่บ่งบอก className="price-summary"
 
-  const darkGreyButtonStyle = (theme) => css`
-    background: ${pickColor(theme)('darkGrey')} // use pickColor to get color
-    color: ${get(theme, ['colors', 'lightGrey'])} // get color directly from theme
-  `
-  const DarkGreyButton = (props) => {
-    const { className, theme, ...rest } = props
-    return (
-      <Button
-        className={cx(
-        'grey-button',
-        darkGreyButtonStyle(theme),
-        className,
-        )}
-        {...rest}
-      />
-    )
-  }
+```js
+// Fixed By
+const PriceSummary = (props) => {
+  const {
+    className,
+    priceSummary,
+    children,
+  } = props
+  const price = new Price(priceSummary)
+  return (
+    <div className={cx('price-summary', className)}>
+      <ContextProvider data={price.data}>
+        {children}
+      </ContextProvider>
+    </div>
+  )
+}
+```
+ทำให้สามารถเขียน PriceSummary.scss เพื่อ override css ของ Row ที่เขียนเป็น children อยู่ใน json ได้
 
-  export default withTheme(DarkGreyButton)
+#### 3. Media Query
+การเขียน media query ในไฟล์ .scss
+```scss
+    @media only screen and (max-width: 767px) {
+      // mobile only
+      color: antiquewhite;
+      ...other css
+    }
+    
+    // we use mobile-first design, so default style should work with mobile
+    
+    color: red; // for mobile by default
+    
+    @media only screen and (min-width: 768px) and (max-width: 991px) {
+      // tablet only
+      color: antiquewhite;
+    }
+    
+    @media only screen and (min-width: 992px) {
+      // computer +
+      color: black;
+    }
 ```
 
-### Global Style
 
-style กลาง ซึ่งเป็นพื้นฐานของ incart platform มีน้ำหนักต่ำที่สุด
-**ห้ามแก้ไข style ที่นี่**
-
-## Style Coding
-### Media Query
-รูปแบบการเขียน MediaQuery สำหรับ media size ต่างๆ
-* Mobile: minWidth: - , maxWidth: 767
-* Tablet: minWidth: 768, maxWidth: 991
-* Computer: minWidth: 992, maxWidth: -
-
-```css
-  /* mobile */
-  @media only screen and (max-width: 767px) {
-    /* mobile styling here */
-  }
-
-  /* tablet */
-  @media only screen and (min-width: 768px) and (max-width: 991) {
-    /* tablet styling here */
-  }
-
-  /* computer */
-  @media only screen and (min-width: 992) {
-    /* computer styling here */
-  }
-```
+## META inline
+เป็นการทำ styling ผ่าน JSON โดยใส่เป็นรูปแบบ css in js มีน้ำหนักสูงที่สุด
+> inline style ที่จะถูก apply เฉพาะ specific component (เมื่อแก้ style จาก CMS UI จะถูก apply ที่นี่)<br/>
+> [ตัวอย่างการใช้งาน](#style)
