@@ -111,5 +111,5 @@
     font-family: Norwester, DBHelvethaicaX;
     
     /* Body */
-    font-family: DBThaiTextX, RobotoCondensed;
+    font-family: RobotoCondensed, DBThaiTextX;
 ```
