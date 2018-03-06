@@ -283,3 +283,14 @@ const PriceSummary = (props) => {
 เป็นการทำ styling ผ่าน JSON โดยใส่เป็นรูปแบบ css in js มีน้ำหนักสูงที่สุด
 > inline style ที่จะถูก apply เฉพาะ specific component (เมื่อแก้ style จาก CMS UI จะถูก apply ที่นี่)<br/>
 > [ตัวอย่างการใช้งาน](#style)
+
+# Test
+```css
+  div {
+    height: 200px;
+    width: 300px;
+    border: 25px solid green;
+    padding: 25px;
+    margin: 25px;
+  }
+```
